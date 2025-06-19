@@ -68,4 +68,62 @@ describe('TODOMvc App', () => {
       .children()
       .should('have.length', 2);
   });
+
+  it('Marca e desmarca uma tarefa como concluída', () => {
+    cy.visit('');
+  
+    cy.get('[data-cy=todo-input]')
+      .type('Estudar Cypress{enter}');
+  
+    cy.get('[data-cy=todos-list] > li')
+      .first()
+      .as('primeiraTarefa');
+  
+    cy.get('@primeiraTarefa')
+      .find('.toggle')
+      .check();
+  
+    cy.get('@primeiraTarefa')
+      .should('have.class', 'completed');
+  
+    cy.get('@primeiraTarefa')
+      .find('.toggle')
+      .uncheck();
+  
+    cy.get('@primeiraTarefa')
+      .should('not.have.class', 'completed');
+  });
+
+  it('Não adiciona tarefa vazia', () => {
+    cy.visit('');
+  
+    cy.get('[data-cy=todo-input]')
+      .type('{enter}');
+  
+    cy.get('[data-cy=todos-list]')
+      .children()
+      .should('have.length', 0);
+  });
+  
+  it('Limpa todas as tarefas concluídas', () => {
+    cy.visit('');
+  
+    cy.get('[data-cy=todo-input]')
+      .type('Tarefa 1{enter}')
+      .type('Tarefa 2{enter}');
+  
+    cy.get('[data-cy=todos-list] > li')
+      .first()
+      .find('.toggle')
+      .check();
+  
+    cy.get('.clear-completed')
+      .click();
+  
+    cy.get('[data-cy=todos-list]')
+      .children()
+      .should('have.length', 1)
+      .first()
+      .should('contain.text', 'Tarefa 2');
+  });
 });
